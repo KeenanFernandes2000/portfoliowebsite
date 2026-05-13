@@ -56,7 +56,7 @@ export function Education() {
     >
       <FadeInView>
         <span className="text-xs font-mono text-em tracking-widest uppercase mb-4 block">
-          05 / Education & Certifications
+          04 / Education & Certifications
         </span>
         <h2
           id="education-heading"
