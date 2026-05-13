@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useInView, useReducedMotion } from "framer-motion";
-import { Mail, Send, Linkedin, Phone, Check } from "lucide-react";
+import { Mail, Send, ExternalLink, Phone, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 function FadeInView({
@@ -108,7 +108,7 @@ export function Contact() {
               className="group flex items-center gap-4 p-5 rounded-2xl border border-border bg-card hover:border-em/50 hover:bg-em-muted/30 transition-all duration-200 focus-ring"
             >
               <span className="w-10 h-10 rounded-xl bg-em-muted flex items-center justify-center text-em shrink-0">
-                <Linkedin className="w-5 h-5" aria-hidden="true" />
+                <ExternalLink className="w-5 h-5" aria-hidden="true" />
               </span>
               <span className="min-w-0">
                 <span className="block text-xs font-mono uppercase tracking-widest text-muted-foreground">
