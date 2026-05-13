@@ -40,6 +40,7 @@ function buildRuntime() {
 
   const agent = new BuiltInAgent({
     model: nvidia.chat("meta/llama-3.3-70b-instruct"),
+    toolChoice: "none",
   });
 
   return new CopilotRuntime({
