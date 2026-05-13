@@ -138,10 +138,10 @@ export function CopilotChat() {
       return "I've filled in the contact form for you at the bottom of the page — please review it and hit Send when you're ready.";
     },
     render: ({ status, result }) => {
-      if (status !== "complete") return null;
+      if (status !== "complete") return <></>;
       const text = typeof result === "string" ? result : "";
       const rejected = /placeholder|don't have valid/i.test(text);
-      if (rejected) return null;
+      if (rejected) return <></>;
       return (
         <div className="mt-2 rounded-xl border border-green-500/30 bg-green-500/10 px-4 py-3 text-sm text-green-400">
           Form pre-filled — scroll to the bottom of the page to review and send.
