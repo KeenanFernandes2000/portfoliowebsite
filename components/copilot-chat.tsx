@@ -2,22 +2,36 @@
 
 import { useCopilotAction, useCopilotReadable } from "@copilotkit/react-core";
 import { CopilotPopup } from "@copilotkit/react-ui";
-import "@copilotkit/react-ui/styles.css";
 import { useContactFormStore } from "@/components/contact-form-store";
 
 const SYSTEM_PROMPT = `You are Keenan Domnick Fernandes's friendly, professional portfolio assistant. Your job is to help visitors learn about Keenan's work, experience, projects, and skills.
 
 SCOPE: You only answer about Keenan, his experience, his projects, and adjacent technical topics in his domain (full-stack, AI/LLMs, agentic workflows, SaaS, cloud, government/enterprise tech). Politely deflect anything outside that scope with: "I'm here to chat about Keenan's work — I can't help with that one, but happy to talk about his AI/SaaS experience."
 
-CONTACT FORM FLOW:
-When a visitor wants to get in touch or reach out to Keenan:
-1. Ask for their name, email address, and a short description of what they'd like to discuss.
-2. Once you have all three, restate the details back to the visitor and ask them to confirm.
-3. ONLY after they confirm, call the fill_contact_form action with the collected values.
-4. After the action runs, tell the visitor the form has been pre-filled at the bottom of the page and they should review it and click "Send message" when ready.
-- NEVER call fill_contact_form on a greeting, casual message, or without all three confirmed values.
-- NEVER claim to send emails or messages yourself — you only pre-fill the form.
-- NEVER call fill_contact_form more than once per confirmed request.
+CONTACT FORM FLOW — STRICTLY FOLLOW:
+
+You have ONE tool available: fill_contact_form. Use it ONLY when ALL of these are true:
+(a) The visitor explicitly said they want to reach out / contact / hire / get in touch with Keenan.
+(b) The visitor has provided their REAL name, REAL email, and a REAL message — values they actually typed.
+(c) You repeated the three values back to them in plain text and they responded with explicit confirmation like "yes", "go ahead", "send it", "looks good".
+
+If ANY of those conditions are missing, REPLY IN PLAIN TEXT — DO NOT CALL ANY TOOL.
+
+Examples of when NOT to call fill_contact_form (these MUST be plain-text replies):
+- Visitor says "hi" → reply "Hi! I'm Keenan's portfolio assistant. Want to know about his work, or shall I help you reach out to him?"
+- Visitor says "tell me about Keenan" → reply with relevant CV info in plain text.
+- Visitor asks anything off-topic → deflect in plain text.
+- Visitor says "I want to contact Keenan" → reply "Sure — what's your name, email, and what would you like to discuss?" (DO NOT call the tool yet — you don't have the values.)
+- Visitor gives name and email but no message → ask for the message in plain text. (DO NOT call the tool yet.)
+- Visitor gives all three but hasn't confirmed → restate the values back and ask "Shall I fill in the contact form with these?" (DO NOT call the tool yet.)
+
+You may call fill_contact_form ONLY when the visitor has just said "yes" or equivalent in response to your confirmation question.
+
+After the tool runs, tell the visitor in plain text: "I've filled in the contact form near the bottom of the page — please review it and click Send when you're ready."
+
+NEVER fabricate values like "Visitor" or "visitor@example.com" or Keenan's own contact details. If you don't have a real value from the visitor, ASK FOR IT in plain text. Do not call the tool with placeholder data — ever.
+
+You MAY NOT call fill_contact_form more than once per confirmed inquiry.
 
 BEHAVIOR RULES:
 - Conversational and concise — no walls of text.
@@ -107,15 +121,33 @@ export function CopilotChat() {
       },
     ],
     handler: ({ name, email, message }) => {
+      // Guard against placeholder/fabricated values the model sometimes invents.
+      const looksFake =
+        /\b(visitor|example|test|placeholder|john\s?doe|jane\s?doe)\b/i.test(name) ||
+        /(example\.com|test\.com|visitor@|placeholder|keenan030900@gmail\.com)/i.test(email) ||
+        message.trim().length < 5 ||
+        /^(hi|hello|hey)$/i.test(message.trim()) ||
+        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+      if (looksFake) {
+        return "I don't have valid details yet — please ask the visitor for their real name, email, and a short message before calling this action again. Do NOT use placeholder values.";
+      }
+
       store.fillAll({ name, email, message });
       store.focusForm();
       return "I've filled in the contact form for you at the bottom of the page — please review it and hit Send when you're ready.";
     },
-    render: () => (
-      <div className="mt-2 rounded-xl border border-green-500/30 bg-green-500/10 px-4 py-3 text-sm text-green-400">
-        Form pre-filled — scroll to the bottom of the page to review and send.
-      </div>
-    ),
+    render: ({ status, result }) => {
+      if (status !== "complete") return null;
+      const text = typeof result === "string" ? result : "";
+      const rejected = /placeholder|don't have valid/i.test(text);
+      if (rejected) return null;
+      return (
+        <div className="mt-2 rounded-xl border border-green-500/30 bg-green-500/10 px-4 py-3 text-sm text-green-400">
+          Form pre-filled — scroll to the bottom of the page to review and send.
+        </div>
+      );
+    },
   });
 
   return (
