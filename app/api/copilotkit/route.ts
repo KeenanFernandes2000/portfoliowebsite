@@ -39,7 +39,7 @@ function buildRuntime() {
   });
 
   const agent = new BuiltInAgent({
-    model: nvidia.chat("nvidia/llama-3.1-nemotron-70b-instruct"),
+    model: nvidia.chat("meta/llama-4-maverick-17b-128e-instruct"),
     toolChoice: "auto",
   });
 
