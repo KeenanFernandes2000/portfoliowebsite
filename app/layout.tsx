@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
+import { CopilotProvider } from "@/components/copilot-provider";
 import { AnimatedBackground } from "@/components/animated-bg";
 
 const geistSans = Geist({
@@ -70,8 +71,10 @@ export default function RootLayout({
       </head>
       <body className="min-h-screen bg-background text-foreground antialiased">
         <ThemeProvider>
-          <AnimatedBackground />
-          {children}
+          <CopilotProvider>
+            <AnimatedBackground />
+            {children}
+          </CopilotProvider>
         </ThemeProvider>
       </body>
     </html>

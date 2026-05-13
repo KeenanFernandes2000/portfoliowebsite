@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { sendInquiry } from "@/lib/email";
 
-// ── Rate limiting ────────────────────────────────────────────────────────────
+// ── Rate limiting (stricter — chatbot endpoint) ───────────────────────────────
 interface RateLimitEntry {
   count: number;
   resetAt: number;
@@ -28,17 +28,16 @@ function checkRateLimit(ip: string): boolean {
   return true;
 }
 
-// ── Validation ───────────────────────────────────────────────────────────────
+// ── Validation ────────────────────────────────────────────────────────────────
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-interface ContactPayload {
+interface InquiryPayload {
   name: string;
   email: string;
   message: string;
-  website?: string;
 }
 
-function validate(body: ContactPayload): string | null {
+function validate(body: InquiryPayload): string | null {
   const name = body.name?.trim() ?? "";
   const email = body.email?.trim() ?? "";
   const message = body.message?.trim() ?? "";
@@ -55,34 +54,25 @@ function validate(body: ContactPayload): string | null {
   return null;
 }
 
-// ── Route handler ────────────────────────────────────────────────────────────
+// ── Route handler ─────────────────────────────────────────────────────────────
 export async function POST(request: NextRequest): Promise<NextResponse> {
-  // Rate limiting
   const forwardedFor = request.headers.get("x-forwarded-for");
   const ip = forwardedFor ? forwardedFor.split(",")[0].trim() : "unknown";
 
   if (!checkRateLimit(ip)) {
     return NextResponse.json(
-      { error: "Too many requests, try again later." },
+      { error: "Too many requests. Please try again later." },
       { status: 429 }
     );
   }
 
-  // Parse body
-  let body: ContactPayload;
+  let body: InquiryPayload;
   try {
-    body = (await request.json()) as ContactPayload;
+    body = (await request.json()) as InquiryPayload;
   } catch {
     return NextResponse.json({ error: "Invalid request body." }, { status: 400 });
   }
 
-  // Honeypot check
-  if (body.website) {
-    // Silently accept — don't reveal the trap to bots
-    return NextResponse.json({ ok: true });
-  }
-
-  // Server-side validation
   const validationError = validate(body);
   if (validationError) {
     return NextResponse.json({ error: validationError }, { status: 400 });

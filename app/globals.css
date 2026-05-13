@@ -171,3 +171,14 @@
     @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-em focus-visible:ring-offset-2 focus-visible:ring-offset-background;
   }
 }
+
+/* ── CopilotKit theming ────────────────────────────────────────────────────── */
+.copilotKitPopup,
+.copilotKitButton {
+  --copilot-kit-primary-color: var(--em);
+  --copilot-kit-contrast-color: #ffffff;
+  --copilot-kit-background-color: var(--card);
+  --copilot-kit-secondary-color: var(--muted);
+  --copilot-kit-separator-color: var(--border);
+  --copilot-kit-muted-color: var(--muted-foreground);
+}

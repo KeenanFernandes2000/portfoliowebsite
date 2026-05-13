@@ -1,3 +1,4 @@
+import dynamic from "next/dynamic";
 import { Nav } from "@/components/nav";
 import { Hero } from "@/components/sections/hero";
 import { About } from "@/components/sections/about";
@@ -6,6 +7,11 @@ import { Skills } from "@/components/sections/skills";
 import { Education } from "@/components/sections/education";
 import { Contact } from "@/components/sections/contact";
 import { Footer } from "@/components/footer";
+
+const CopilotChat = dynamic(
+  () => import("@/components/copilot-chat").then((m) => m.CopilotChat),
+  { ssr: false }
+);
 
 export default function Home() {
   return (
@@ -20,6 +26,7 @@ export default function Home() {
         <Contact />
       </main>
       <Footer />
+      <CopilotChat />
     </>
   );
 }
