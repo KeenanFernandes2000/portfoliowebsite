@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useInView } from "framer-motion";
+import { useInView, AnimatePresence, motion } from "framer-motion";
 import { useReducedMotion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -200,22 +200,37 @@ function JobCard({
           </div>
 
           {/* Expandable bullets */}
-          {expanded && (
-            <ul className="mt-5 space-y-2.5" role="list">
-              {job.bullets.map((bullet, i) => (
-                <li
-                  key={i}
-                  className="flex gap-3 text-sm text-muted-foreground leading-relaxed"
-                >
-                  <span
-                    className="mt-1.5 w-1.5 h-1.5 rounded-full bg-em shrink-0"
-                    aria-hidden="true"
-                  />
-                  {bullet}
-                </li>
-              ))}
-            </ul>
-          )}
+          <AnimatePresence initial={false}>
+            {expanded && (
+              <motion.ul
+                key="bullets"
+                role="list"
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{
+                  height: { duration: 0.35, ease: [0.16, 1, 0.3, 1] },
+                  opacity: { duration: 0.25, ease: "easeOut" },
+                }}
+                className="overflow-hidden"
+              >
+                <div className="mt-5 space-y-2.5">
+                  {job.bullets.map((bullet, i) => (
+                    <li
+                      key={i}
+                      className="flex gap-3 text-sm text-muted-foreground leading-relaxed"
+                    >
+                      <span
+                        className="mt-1.5 w-1.5 h-1.5 rounded-full bg-em shrink-0"
+                        aria-hidden="true"
+                      />
+                      {bullet}
+                    </li>
+                  ))}
+                </div>
+              </motion.ul>
+            )}
+          </AnimatePresence>
         </div>
       </article>
     </FadeInView>
@@ -226,7 +241,7 @@ export function Experience() {
   return (
     <section
       id="experience"
-      className="py-24 md:py-32 section-padding max-w-6xl mx-auto"
+      className="py-24 md:py-32 section-padding max-w-7xl mx-auto"
       aria-labelledby="experience-heading"
     >
       <FadeInView>
@@ -256,13 +271,13 @@ export function Experience() {
           aria-hidden="true"
         />
 
-        <div className="space-y-12">
+        <div className="space-y-16 md:space-y-20">
           {JOBS.map((job, i) => {
             const isLeft = i % 2 === 0;
             return (
               <div
                 key={job.company + job.period}
-                className="relative grid grid-cols-[3rem_1fr] md:grid-cols-[1fr_auto_1fr] gap-x-4 md:gap-x-8 items-start"
+                className="relative grid grid-cols-[3rem_1fr] md:grid-cols-[1fr_auto_1fr] gap-x-4 md:gap-x-12 items-start"
               >
                 {/* Desktop: card column (1 or 3) */}
                 <div
