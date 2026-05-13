@@ -145,33 +145,41 @@ export async function sendInquiry({
   const resend = new Resend(apiKey);
   const fromAddress =
     process.env.EMAIL_FROM ?? "Keenan Fernandes <onboarding@resend.dev>";
+  const ownerEmail = process.env.EMAIL_TO ?? "keenan030900@gmail.com";
+  const domainVerified = process.env.RESEND_DOMAIN_VERIFIED === "true";
   const timestamp = new Date().toUTCString();
 
   try {
-    const [ownerResult, senderResult] = await Promise.all([
-      resend.emails.send({
-        from: fromAddress,
-        to: "keenan030900@gmail.com",
-        replyTo: email,
-        subject: `New portfolio inquiry from ${name}`,
-        html: buildOwnerHtml(name, email, message, timestamp),
-        text: buildOwnerText(name, email, message, timestamp),
-      }),
-      resend.emails.send({
+    const ownerResult = await resend.emails.send({
+      from: fromAddress,
+      to: ownerEmail,
+      replyTo: email,
+      subject: `New portfolio inquiry from ${name}`,
+      html: buildOwnerHtml(name, email, message, timestamp),
+      text: buildOwnerText(name, email, message, timestamp),
+    });
+
+    if (ownerResult.error) {
+      console.error("[email] Resend owner error:", ownerResult.error);
+      return { ok: false, error: "Email service unavailable." };
+    }
+
+    // Sender confirmation only works once a domain is verified at resend.com.
+    // Until then, the default onboarding@resend.dev sender can only deliver to
+    // the verified account holder — so we skip the visitor confirmation.
+    if (domainVerified) {
+      const senderResult = await resend.emails.send({
         from: fromAddress,
         to: email,
         subject: "Thanks for reaching out — Keenan Fernandes",
         html: buildSenderHtml(name, message),
         text: buildSenderText(name, message),
-      }),
-    ]);
-
-    if (ownerResult.error || senderResult.error) {
-      console.error("[email] Resend error:", {
-        owner: ownerResult.error,
-        sender: senderResult.error,
       });
-      return { ok: false, error: "Email service unavailable." };
+
+      if (senderResult.error) {
+        // Owner email already sent — log but don't fail the whole flow.
+        console.error("[email] Resend sender error:", senderResult.error);
+      }
     }
 
     return { ok: true };

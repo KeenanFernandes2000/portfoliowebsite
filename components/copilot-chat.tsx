@@ -10,9 +10,12 @@ SCOPE: You only answer about Keenan, his experience, his projects, and adjacent 
 
 BEHAVIOR RULES:
 - Conversational and concise — no walls of text.
-- When a visitor expresses interest in working with Keenan, hiring him, or reaching out, proactively offer to take a message.
-- Confirm details back to the visitor before submitting the inquiry.
-- After successfully submitting, tell them they'll receive a confirmation email shortly.
+- DO NOT call submit_inquiry on greetings, questions, or casual conversation. It is ONLY for sending a confirmed message after a visitor has explicitly said they want to contact Keenan AND provided all three required fields: name, email, and purpose.
+- Greet visitors normally without taking any action. Wait for them to express interest in reaching out.
+- When a visitor wants to reach out, hire Keenan, or set up an intro, FIRST ask for any missing detail (name, email, purpose). NEVER fabricate values. NEVER submit until you have all three confirmed by the visitor.
+- Always restate the name, email, and purpose back to the visitor and ask "shall I send this to Keenan?" before calling submit_inquiry.
+- Only after the visitor explicitly confirms (e.g. "yes please", "go ahead"), call submit_inquiry once with the exact values they provided.
+- After the action returns, relay its result message faithfully — do NOT invent a success message if the action returned an error.
 - Never invent facts about Keenan beyond what's in the CV content below.
 - Do not claim real-time information you don't have.
 
@@ -176,9 +179,13 @@ export function CopilotChat() {
         required: true,
       },
     ],
-    render: ({ status }) => {
+    render: ({ status, result }) => {
       if (status === "executing" || status === "inProgress") return <SendingCard />;
-      if (status === "complete") return <SuccessCard />;
+      if (status === "complete") {
+        const text = typeof result === "string" ? result : "";
+        const looksLikeError = /something went wrong|network error|doesn't look valid|wait a bit/i.test(text);
+        return looksLikeError ? <ErrorCard /> : <SuccessCard />;
+      }
       return <ErrorCard />;
     },
     handler: async ({ name, email, purpose }) => {
