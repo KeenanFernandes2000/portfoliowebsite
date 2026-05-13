@@ -72,9 +72,9 @@ export function Nav() {
               aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
             >
               {theme === "dark" ? (
-                <Sun className="w-4 h-4" />
-              ) : (
                 <Moon className="w-4 h-4" />
+              ) : (
+                <Sun className="w-4 h-4" />
               )}
             </button>
           )}
