@@ -75,7 +75,7 @@ export function CopilotChat() {
     <CopilotPopup
       instructions={SYSTEM_PROMPT}
       labels={{
-        title: "Chat with Keenan's AI",
+        title: "Keenan's Portfolio Assistant",
         initial:
           "Hi! I'm Keenan's portfolio assistant. Ask me about his work, experience, or projects.",
         placeholder: "Ask about Keenan's experience…",

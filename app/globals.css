@@ -182,3 +182,32 @@
   --copilot-kit-separator-color: var(--border);
   --copilot-kit-muted-color: var(--muted-foreground);
 }
+
+/* Header title color follows theme — covers v1 + v2 class names */
+.copilotKitHeader,
+.copilotKitHeader *,
+.copilotKitWindowHeader,
+.copilotKitWindowHeader *,
+[class*="copilotKitHeader"],
+[class*="copilotKitHeader"] * {
+  color: var(--foreground) !important;
+}
+
+/* All buttons inside the popup get a pointer cursor */
+.copilotKitPopup button,
+.copilotKitWindow button,
+[class*="copilotKit"] button {
+  cursor: pointer;
+}
+
+/* Hide help + debug buttons regardless of class names */
+[class*="copilotKit"] [aria-label*="Help" i],
+[class*="copilotKit"] [aria-label*="Debug" i],
+[class*="copilotKit"] [title*="Help" i],
+[class*="copilotKit"] [title*="Debug" i],
+[class*="copilotKitDebug"],
+[class*="copilotKitHelp"],
+[class*="DebugButton"],
+[class*="HelpButton"] {
+  display: none !important;
+}
