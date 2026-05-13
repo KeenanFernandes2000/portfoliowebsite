@@ -25,6 +25,18 @@ bun run build
 bun start
 ```
 
+## Email setup
+
+The contact form uses [Resend](https://resend.com) to send emails.
+
+1. Sign up at resend.com and grab an API key.
+2. Copy `.env.local.example` to `.env.local` and paste your key:
+   ```
+   RESEND_API_KEY=re_xxxxxxxxxxxxxxxx
+   EMAIL_FROM="Keenan Fernandes <onboarding@resend.dev>"
+   ```
+3. `onboarding@resend.dev` works immediately without verifying a domain — useful for dev/testing. For production, [verify your own domain](https://resend.com/docs/dashboard/domains/introduction) in Resend and update `EMAIL_FROM` to a verified address (e.g. `hello@yourdomain.com`).
+
 ## Deploy (Vercel)
 
 Push to GitHub, import the repo in Vercel — zero config needed. Next.js is auto-detected.

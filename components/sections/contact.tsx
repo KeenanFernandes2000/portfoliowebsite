@@ -1,8 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { useInView, useReducedMotion } from "framer-motion";
-import { Mail, Send, ExternalLink, Phone, Check } from "lucide-react";
+import { motion, useInView, useReducedMotion, AnimatePresence } from "framer-motion";
+import { Mail, Send, ExternalLink, Phone, CheckCircle2, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 function FadeInView({
@@ -36,24 +36,55 @@ function FadeInView({
   );
 }
 
+type FormStatus = "idle" | "submitting" | "success" | "error";
+
 export function Contact() {
   const [name, setName] = React.useState("");
   const [email, setEmail] = React.useState("");
   const [message, setMessage] = React.useState("");
-  const [sent, setSent] = React.useState(false);
+  const [honeypot, setHoneypot] = React.useState("");
+  const [status, setStatus] = React.useState<FormStatus>("idle");
+  const [serverError, setServerError] = React.useState<string>("");
+  const shouldReduce = useReducedMotion();
 
   const valid =
     name.trim().length > 1 &&
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) &&
     message.trim().length > 3;
 
-  function handleSubmit(e: React.FormEvent) {
+  const isSubmitting = status === "submitting";
+  const isSuccess = status === "success";
+
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!valid) return;
-    const subject = encodeURIComponent(`Portfolio inquiry from ${name}`);
-    const body = encodeURIComponent(`${message}\n\n— ${name}\n${email}`);
-    window.location.href = `mailto:keenan030900@gmail.com?subject=${subject}&body=${body}`;
-    setSent(true);
+    if (!valid || isSubmitting) return;
+
+    setStatus("submitting");
+    setServerError("");
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, message, website: honeypot }),
+      });
+
+      const data = (await res.json()) as { ok?: boolean; error?: string };
+
+      if (res.ok && data.ok) {
+        setStatus("success");
+      } else {
+        setServerError(
+          data.error ?? "Something went wrong, please try again or email me directly."
+        );
+        setStatus("error");
+      }
+    } catch {
+      setServerError(
+        "Something went wrong, please try again or email me directly."
+      );
+      setStatus("error");
+    }
   }
 
   return (
@@ -139,95 +170,148 @@ export function Contact() {
           </div>
         </FadeInView>
 
-        {/* Right: form */}
+        {/* Right: form or success */}
         <FadeInView delay={0.1}>
-          <form
-            onSubmit={handleSubmit}
-            className="rounded-2xl border border-border bg-card p-6 sm:p-8 space-y-5"
-            noValidate
-          >
-            <div className="grid sm:grid-cols-2 gap-5">
-              <div>
-                <label
-                  htmlFor="name"
-                  className="block text-xs font-mono uppercase tracking-widest text-muted-foreground mb-2"
-                >
-                  Name
-                </label>
-                <input
-                  id="name"
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Jane Doe"
-                  className="w-full px-4 py-3 rounded-xl border border-border bg-background text-foreground placeholder:text-muted-foreground/60 focus:border-em focus:outline-none focus:ring-2 focus:ring-em/30 transition-colors"
-                  required
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="email"
-                  className="block text-xs font-mono uppercase tracking-widest text-muted-foreground mb-2"
-                >
-                  Email
-                </label>
-                <input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@company.com"
-                  className="w-full px-4 py-3 rounded-xl border border-border bg-background text-foreground placeholder:text-muted-foreground/60 focus:border-em focus:outline-none focus:ring-2 focus:ring-em/30 transition-colors"
-                  required
-                />
-              </div>
-            </div>
-
-            <div>
-              <label
-                htmlFor="message"
-                className="block text-xs font-mono uppercase tracking-widest text-muted-foreground mb-2"
+          <AnimatePresence mode="wait">
+            {isSuccess ? (
+              <motion.div
+                key="success"
+                initial={{ opacity: 0, y: shouldReduce ? 0 : 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: shouldReduce ? 0.01 : 0.4, ease: "easeOut" }}
+                className="rounded-2xl border border-border bg-card p-8 sm:p-10 flex flex-col items-center text-center gap-4"
+                role="alert"
+                aria-live="polite"
               >
-                Message
-              </label>
-              <textarea
-                id="message"
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                placeholder="Tell me a bit about the role, project, or idea…"
-                rows={6}
-                className="w-full px-4 py-3 rounded-xl border border-border bg-background text-foreground placeholder:text-muted-foreground/60 focus:border-em focus:outline-none focus:ring-2 focus:ring-em/30 transition-colors resize-y min-h-[140px]"
-                required
-              />
-            </div>
+                <div className="w-14 h-14 rounded-full bg-em-muted flex items-center justify-center">
+                  <CheckCircle2 className="w-7 h-7 text-em" aria-hidden="true" />
+                </div>
+                <div>
+                  <p className="text-lg font-semibold text-foreground mb-1">
+                    Message sent!
+                  </p>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    Check your inbox for a confirmation. I&apos;ll get back to you
+                    within a few days.
+                  </p>
+                </div>
+              </motion.div>
+            ) : (
+              <motion.form
+                key="form"
+                onSubmit={handleSubmit}
+                className="rounded-2xl border border-border bg-card p-6 sm:p-8 space-y-5"
+                noValidate
+                initial={{ opacity: 1 }}
+                exit={{ opacity: 0, y: shouldReduce ? 0 : -8 }}
+                transition={{ duration: shouldReduce ? 0.01 : 0.2 }}
+              >
+                {/* Honeypot — visually hidden, ignored by real users */}
+                <input
+                  type="text"
+                  name="website"
+                  value={honeypot}
+                  onChange={(e) => setHoneypot(e.target.value)}
+                  tabIndex={-1}
+                  autoComplete="off"
+                  aria-hidden="true"
+                  style={{ position: "absolute", left: "-9999px" }}
+                />
 
-            <button
-              type="submit"
-              disabled={!valid}
-              className={cn(
-                "w-full sm:w-auto inline-flex items-center justify-center gap-2.5 font-semibold text-sm px-7 py-3.5 rounded-xl focus-ring transition-all duration-200",
-                valid
-                  ? "bg-em text-white hover:opacity-90 shadow-lg shadow-em/20"
-                  : "bg-muted text-muted-foreground cursor-not-allowed"
-              )}
-            >
-              {sent ? (
-                <>
-                  <Check className="w-4 h-4" aria-hidden="true" />
-                  Opening your mail client…
-                </>
-              ) : (
-                <>
-                  <Send className="w-4 h-4" aria-hidden="true" />
-                  Send message
-                </>
-              )}
-            </button>
-            <p className="text-xs text-muted-foreground/70 leading-relaxed">
-              Submitting opens your email client with the message pre-filled —
-              no data is stored.
-            </p>
-          </form>
+                <div className="grid sm:grid-cols-2 gap-5">
+                  <div>
+                    <label
+                      htmlFor="name"
+                      className="block text-xs font-mono uppercase tracking-widest text-muted-foreground mb-2"
+                    >
+                      Name
+                    </label>
+                    <input
+                      id="name"
+                      type="text"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      placeholder="Jane Doe"
+                      disabled={isSubmitting}
+                      className="w-full px-4 py-3 rounded-xl border border-border bg-background text-foreground placeholder:text-muted-foreground/60 focus:border-em focus:outline-none focus:ring-2 focus:ring-em/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="email"
+                      className="block text-xs font-mono uppercase tracking-widest text-muted-foreground mb-2"
+                    >
+                      Email
+                    </label>
+                    <input
+                      id="email"
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="you@company.com"
+                      disabled={isSubmitting}
+                      className="w-full px-4 py-3 rounded-xl border border-border bg-background text-foreground placeholder:text-muted-foreground/60 focus:border-em focus:outline-none focus:ring-2 focus:ring-em/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="message"
+                    className="block text-xs font-mono uppercase tracking-widest text-muted-foreground mb-2"
+                  >
+                    Message
+                  </label>
+                  <textarea
+                    id="message"
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    placeholder="Tell me a bit about the role, project, or idea…"
+                    rows={6}
+                    disabled={isSubmitting}
+                    className="w-full px-4 py-3 rounded-xl border border-border bg-background text-foreground placeholder:text-muted-foreground/60 focus:border-em focus:outline-none focus:ring-2 focus:ring-em/30 transition-colors resize-y min-h-[140px] disabled:opacity-50 disabled:cursor-not-allowed"
+                    required
+                  />
+                </div>
+
+                {/* Inline error banner */}
+                {status === "error" && serverError && (
+                  <div
+                    role="alert"
+                    aria-live="polite"
+                    className="px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-sm text-red-400 leading-relaxed"
+                  >
+                    {serverError}
+                  </div>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={!valid || isSubmitting}
+                  className={cn(
+                    "w-full sm:w-auto inline-flex items-center justify-center gap-2.5 font-semibold text-sm px-7 py-3.5 rounded-xl focus-ring transition-all duration-200",
+                    valid && !isSubmitting
+                      ? "bg-em text-white hover:opacity-90 shadow-lg shadow-em/20"
+                      : "bg-muted text-muted-foreground cursor-not-allowed"
+                  )}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />
+                      Sending…
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-4 h-4" aria-hidden="true" />
+                      Send message
+                    </>
+                  )}
+                </button>
+              </motion.form>
+            )}
+          </AnimatePresence>
         </FadeInView>
       </div>
     </section>
