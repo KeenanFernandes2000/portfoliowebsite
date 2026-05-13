@@ -1,21 +1,17 @@
 "use client";
 
-import { useCopilotAction, useCopilotReadable } from "@copilotkit/react-core";
+import { useCopilotReadable } from "@copilotkit/react-core";
 import { CopilotPopup } from "@copilotkit/react-ui";
 import "@copilotkit/react-ui/styles.css";
 
-const SYSTEM_PROMPT = `You are Keenan Domnick Fernandes's friendly, professional portfolio assistant. Your job is to help visitors learn about Keenan's work and, when they're interested in reaching out, collect their name, email, and the reason for getting in touch, then use the submit_inquiry action to send Keenan a message.
+const SYSTEM_PROMPT = `You are Keenan Domnick Fernandes's friendly, professional portfolio assistant. Your job is to help visitors learn about Keenan's work, experience, projects, and skills.
 
-SCOPE: You only answer about Keenan, his experience, his projects, and adjacent technical topics in his domain (full-stack, AI/LLMs, agentic workflows, SaaS, cloud, government/enterprise tech). Politely deflect anything outside that scope with: "I'm here to chat about Keenan's work — I can't help with that one, but happy to talk about his AI/SaaS experience or set up a quick intro."
+SCOPE: You only answer about Keenan, his experience, his projects, and adjacent technical topics in his domain (full-stack, AI/LLMs, agentic workflows, SaaS, cloud, government/enterprise tech). Politely deflect anything outside that scope with: "I'm here to chat about Keenan's work — I can't help with that one, but happy to talk about his AI/SaaS experience."
 
 BEHAVIOR RULES:
 - Conversational and concise — no walls of text.
-- DO NOT call submit_inquiry on greetings, questions, or casual conversation. It is ONLY for sending a confirmed message after a visitor has explicitly said they want to contact Keenan AND provided all three required fields: name, email, and purpose.
-- Greet visitors normally without taking any action. Wait for them to express interest in reaching out.
-- When a visitor wants to reach out, hire Keenan, or set up an intro, FIRST ask for any missing detail (name, email, purpose). NEVER fabricate values. NEVER submit until you have all three confirmed by the visitor.
-- Always restate the name, email, and purpose back to the visitor and ask "shall I send this to Keenan?" before calling submit_inquiry.
-- Only after the visitor explicitly confirms (e.g. "yes please", "go ahead"), call submit_inquiry once with the exact values they provided.
-- After the action returns, relay its result message faithfully — do NOT invent a success message if the action returned an error.
+- If a visitor wants to reach out to Keenan, point them to the contact form lower on the page, or give them his email (keenan030900@gmail.com) and LinkedIn (https://www.linkedin.com/in/keenan-fernandes-9906b4171/).
+- Do NOT attempt to send any message yourself — you have no tools for that.
 - Never invent facts about Keenan beyond what's in the CV content below.
 - Do not claim real-time information you don't have.
 
@@ -69,155 +65,10 @@ const CV_SUMMARY = {
   education: "BEng Computer Systems Engineering, First Class Honors, 4.25 GPA — Middlesex University (2018–2021)",
 };
 
-// ── Inline action render cards ────────────────────────────────────────────────
-function SendingCard() {
-  return (
-    <div
-      className="flex items-center gap-3 rounded-xl border px-4 py-3 text-sm"
-      style={{
-        borderColor: "var(--em)",
-        backgroundColor: "oklch(0.69 0.18 160 / 8%)",
-        color: "var(--em)",
-      }}
-    >
-      <svg
-        className="h-4 w-4 animate-spin"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth={2}
-        aria-hidden="true"
-      >
-        <path d="M21 12a9 9 0 1 1-6.219-8.56" strokeLinecap="round" />
-      </svg>
-      <span>Sending your message to Keenan…</span>
-    </div>
-  );
-}
-
-function SuccessCard() {
-  return (
-    <div
-      className="flex items-center gap-3 rounded-xl border px-4 py-3 text-sm"
-      style={{
-        borderColor: "oklch(0.55 0.15 145)",
-        backgroundColor: "oklch(0.55 0.15 145 / 10%)",
-        color: "oklch(0.65 0.15 145)",
-      }}
-    >
-      <svg
-        className="h-4 w-4 shrink-0"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth={2.5}
-        aria-hidden="true"
-      >
-        <path d="M20 6 9 17l-5-5" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-      <span>Message sent! Check your inbox for a confirmation email.</span>
-    </div>
-  );
-}
-
-function ErrorCard() {
-  return (
-    <div
-      className="flex items-center gap-3 rounded-xl border px-4 py-3 text-sm"
-      style={{
-        borderColor: "oklch(0.65 0.2 27)",
-        backgroundColor: "oklch(0.65 0.2 27 / 10%)",
-        color: "oklch(0.65 0.2 27)",
-      }}
-    >
-      <svg
-        className="h-4 w-4 shrink-0"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth={2}
-        aria-hidden="true"
-      >
-        <circle cx="12" cy="12" r="10" />
-        <path d="M12 8v4m0 4h.01" strokeLinecap="round" />
-      </svg>
-      <span>Something went wrong — please try the contact form below instead.</span>
-    </div>
-  );
-}
-
-// ── Main widget ───────────────────────────────────────────────────────────────
 export function CopilotChat() {
-  // Structured context for the LLM
   useCopilotReadable({
     description: "Keenan Fernandes's full CV summary including role, achievements, tech stack, and contact info",
     value: CV_SUMMARY,
-  });
-
-  // Action: send inquiry via /api/inquiry
-  useCopilotAction({
-    name: "submit_inquiry",
-    description:
-      "Send a message to Keenan on behalf of the visitor. Use this when the visitor wants to reach out, hire Keenan, or ask for an intro. Always confirm name, email, and purpose with the visitor before calling this.",
-    parameters: [
-      {
-        name: "name",
-        type: "string",
-        description: "The visitor's full name.",
-        required: true,
-      },
-      {
-        name: "email",
-        type: "string",
-        description: "The visitor's email address (must be a valid email).",
-        required: true,
-      },
-      {
-        name: "purpose",
-        type: "string",
-        description: "The reason the visitor is reaching out (e.g. job opportunity, project collaboration, general intro).",
-        required: true,
-      },
-    ],
-    render: ({ status, result }) => {
-      if (status === "executing" || status === "inProgress") return <SendingCard />;
-      if (status === "complete") {
-        const text = typeof result === "string" ? result : "";
-        const looksLikeError = /something went wrong|network error|doesn't look valid|wait a bit/i.test(text);
-        return looksLikeError ? <ErrorCard /> : <SuccessCard />;
-      }
-      return <ErrorCard />;
-    },
-    handler: async ({ name, email, purpose }) => {
-      const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRe.test(email)) {
-        return "That email address doesn't look valid — could you double-check it?";
-      }
-
-      const message = `Reaching out via portfolio chatbot.\n\nPurpose: ${purpose}`;
-
-      try {
-        const res = await fetch("/api/inquiry", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name, email, message }),
-        });
-
-        if (res.status === 429) {
-          return "You've sent quite a few messages — please wait a bit before trying again.";
-        }
-
-        const data = (await res.json()) as { ok?: boolean; error?: string };
-
-        if (!res.ok || !data.ok) {
-          return `Something went wrong sending the message (${data.error ?? "unknown error"}). You can also reach Keenan directly via the contact form on this page.`;
-        }
-
-        return "Done! Your message has been sent to Keenan, and you'll receive a confirmation email shortly.";
-      } catch {
-        return "Network error — please try the contact form on this page instead.";
-      }
-    },
   });
 
   return (
@@ -226,7 +77,7 @@ export function CopilotChat() {
       labels={{
         title: "Chat with Keenan's AI",
         initial:
-          "Hi! I'm Keenan's portfolio assistant. Ask me about his work, experience, or projects — or let me set up an intro for you.",
+          "Hi! I'm Keenan's portfolio assistant. Ask me about his work, experience, or projects.",
         placeholder: "Ask about Keenan's experience…",
       }}
     />
