@@ -147,7 +147,7 @@ export function Projects() {
   return (
     <section
       id="projects"
-      className="py-24 md:py-32 section-padding max-w-6xl mx-auto"
+      className="py-24 md:py-32 section-padding max-w-7xl mx-auto"
       aria-labelledby="projects-heading"
     >
       <FadeInView>

@@ -119,27 +119,21 @@ function FadeInView({
 }
 
 function SkillCard({ group, delay }: { group: SkillGroup; delay: number }) {
-  const [hovered, setHovered] = React.useState(false);
-
   return (
     <FadeInView delay={delay}>
       <div
         className={cn(
-          "p-5 rounded-2xl border bg-card h-full transition-all duration-200",
-          hovered
-            ? "border-em/50 shadow-[0_0_0_1px_var(--color-em)] bg-em-muted/30"
-            : "border-border"
+          "group/card p-5 rounded-2xl border bg-card h-full transition-all duration-200",
+          "border-border hover:border-em/50 hover:shadow-[0_0_0_1px_var(--color-em)] hover:bg-em-muted/30"
         )}
       >
-        <h3 className="text-xs font-mono font-semibold tracking-widest uppercase mb-4 text-muted-foreground">
+        <h3 className="text-xs font-mono font-semibold tracking-widest uppercase mb-4 text-muted-foreground transition-colors duration-200 group-hover/card:text-em">
           {group.category}
         </h3>
         <div className="flex flex-wrap gap-2">
           {group.skills.map((skill) => (
             <span
               key={skill}
-              onMouseEnter={() => setHovered(true)}
-              onMouseLeave={() => setHovered(false)}
               className="text-sm px-3 py-1 rounded-lg border border-border bg-muted/50 text-foreground hover:border-em hover:bg-em-muted transition-colors duration-200 cursor-default"
             >
               {skill}
@@ -155,7 +149,7 @@ export function Skills() {
   return (
     <section
       id="skills"
-      className="py-24 md:py-32 section-padding max-w-6xl mx-auto"
+      className="py-24 md:py-32 section-padding max-w-7xl mx-auto"
       aria-labelledby="skills-heading"
     >
       <style jsx>{`

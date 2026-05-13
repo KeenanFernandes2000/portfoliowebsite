@@ -39,7 +39,7 @@ export function Contact() {
   return (
     <section
       id="contact"
-      className="py-24 md:py-32 section-padding max-w-6xl mx-auto"
+      className="py-24 md:py-32 section-padding max-w-7xl mx-auto"
       aria-labelledby="contact-heading"
     >
       {/* Big CTA block */}

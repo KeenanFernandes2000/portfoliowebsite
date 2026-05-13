@@ -51,7 +51,7 @@ export function Education() {
   return (
     <section
       id="education"
-      className="py-24 md:py-32 section-padding max-w-6xl mx-auto"
+      className="py-24 md:py-32 section-padding max-w-7xl mx-auto"
       aria-labelledby="education-heading"
     >
       <FadeInView>
