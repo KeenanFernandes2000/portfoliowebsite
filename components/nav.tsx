@@ -44,24 +44,14 @@ export function Nav() {
       )}
     >
       <nav
-        className="max-w-6xl mx-auto px-6 md:px-12 h-16 flex items-center justify-between"
+        className="max-w-6xl mx-auto px-6 md:px-12 h-16 flex items-center"
         aria-label="Main navigation"
       >
-        {/* Logo */}
-        <a
-          href="#"
-          className="text-sm font-mono text-em font-medium tracking-widest uppercase focus-ring rounded"
-          onClick={(e) => {
-            e.preventDefault();
-            window.scrollTo({ top: 0, behavior: "smooth" });
-          }}
-          aria-label="Keenan Fernandes — back to top"
-        >
-          KDF
-        </a>
+        {/* Spacer (balances theme toggle on the right) */}
+        <div className="hidden md:block w-9" aria-hidden="true" />
 
-        {/* Desktop links */}
-        <ul className="hidden md:flex items-center gap-6" role="list">
+        {/* Desktop links — absolutely centered */}
+        <ul className="hidden md:flex items-center gap-6 flex-1 justify-center" role="list">
           {navLinks.map((link) => (
             <li key={link.href}>
               <button
@@ -74,8 +64,8 @@ export function Nav() {
           ))}
         </ul>
 
-        {/* Theme toggle + mobile burger */}
-        <div className="flex items-center gap-3">
+        {/* Theme toggle + mobile burger — pushed to the right */}
+        <div className="flex items-center gap-3 ml-auto md:ml-0">
           {mounted && (
             <button
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}

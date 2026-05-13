@@ -3,7 +3,7 @@
 import * as React from "react";
 import { useInView } from "framer-motion";
 import { useReducedMotion } from "framer-motion";
-import { ChevronDown, ExternalLink } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 
@@ -11,6 +11,7 @@ interface Job {
   company: string;
   role: string;
   period: string;
+  year: string;
   location: string;
   featured?: boolean;
   featuredLabel?: string;
@@ -24,6 +25,7 @@ const JOBS: Job[] = [
     company: "Potential FZ LLC",
     role: "Full-Stack AI Product Engineer / Technical Lead",
     period: "Nov 2023 – Present",
+    year: "2023",
     location: "UAE",
     featured: true,
     featuredLabel: "VX-Academy — Featured Case Study",
@@ -46,6 +48,7 @@ const JOBS: Job[] = [
     company: "Emicool",
     role: "Data Science Intern",
     period: "Oct 2022 – Jun 2023",
+    year: "2022",
     location: "UAE",
     bullets: [
       "Preprocessed and migrated Oracle Fusion data; saved ~120 hours of manual work via Alteryx, Python, Pandas, and NumPy automation.",
@@ -62,6 +65,7 @@ const JOBS: Job[] = [
     company: "The Assembly",
     role: "Team Lead & Lab Incharge",
     period: "May 2021 – Jul 2022",
+    year: "2021",
     location: "Dubai, UAE",
     bullets: [
       "Led interns coordinating tech, media, and event projects using Trello for task management.",
@@ -76,6 +80,7 @@ const JOBS: Job[] = [
     company: "Ookiyo",
     role: "Remote Web Developer",
     period: "Dec 2020 – Dec 2021",
+    year: "2020",
     location: "Remote",
     bullets: [
       "Built responsive websites with HTML, CSS, JavaScript, WordPress, and HubSpot.",
@@ -88,9 +93,11 @@ const JOBS: Job[] = [
 function FadeInView({
   children,
   delay = 0,
+  fromLeft = false,
 }: {
   children: React.ReactNode;
   delay?: number;
+  fromLeft?: boolean;
 }) {
   const ref = React.useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-60px" });
@@ -102,10 +109,10 @@ function FadeInView({
       style={{
         opacity: isInView ? 1 : 0,
         transform: isInView
-          ? "translateY(0)"
+          ? "translateX(0)"
           : shouldReduce
-          ? "translateY(0)"
-          : "translateY(24px)",
+          ? "translateX(0)"
+          : `translateX(${fromLeft ? "-24px" : "24px"})`,
         transition: shouldReduce
           ? "opacity 0.01s"
           : `opacity 0.55s ease ${delay}s, transform 0.55s ease ${delay}s`,
@@ -118,9 +125,10 @@ function FadeInView({
 
 function JobCard({ job, index }: { job: Job; index: number }) {
   const [expanded, setExpanded] = React.useState(index === 0);
+  const isLeft = index % 2 === 0;
 
   return (
-    <FadeInView delay={index * 0.08}>
+    <FadeInView delay={index * 0.08} fromLeft={isLeft}>
       <article
         className={cn(
           "relative rounded-2xl border bg-card transition-all duration-300",
@@ -227,25 +235,55 @@ export function Experience() {
         </h2>
       </FadeInView>
 
-      {/* Timeline */}
+      {/* Alternating timeline */}
       <div className="relative">
-        {/* Vertical line */}
+        {/* Center spine — desktop only */}
         <div
-          className="absolute left-0 top-0 bottom-0 w-px bg-border hidden md:block ml-4"
+          className="absolute hidden md:block left-1/2 top-0 bottom-0 w-px bg-border -translate-x-1/2"
           aria-hidden="true"
         />
 
-        <div className="space-y-6 md:pl-12">
-          {JOBS.map((job, i) => (
-            <div key={job.company + job.period} className="relative">
-              {/* Timeline dot */}
-              <div
-                className="absolute -left-12 top-7 hidden md:flex w-3 h-3 rounded-full border-2 border-em bg-background -translate-x-1/2 ml-4"
-                aria-hidden="true"
-              />
-              <JobCard job={job} index={i} />
-            </div>
-          ))}
+        <div className="space-y-12">
+          {JOBS.map((job, i) => {
+            const isLeft = i % 2 === 0;
+            return (
+              <div key={job.company + job.period} className="relative grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-x-8 items-start">
+                {/* Left column */}
+                <div className={cn("hidden md:block", !isLeft && "order-last")}>
+                  {isLeft && <JobCard job={job} index={i} />}
+                </div>
+
+                {/* Center: year marker */}
+                <div className="hidden md:flex flex-col items-center gap-2 pt-6 relative z-10">
+                  <div className="w-3 h-3 rounded-full border-2 border-em bg-background" aria-hidden="true" />
+                  <span className="text-xs font-mono font-semibold text-em tracking-widest">
+                    {job.year}
+                  </span>
+                </div>
+
+                {/* Right column */}
+                <div className={cn("hidden md:block", isLeft && "order-last")}>
+                  {!isLeft && <JobCard job={job} index={i} />}
+                </div>
+
+                {/* Mobile: single column (all cards stacked, left spine) */}
+                <div className="md:hidden relative pl-8">
+                  {/* Mobile spine dot + year */}
+                  <div className="absolute left-0 top-6 flex flex-col items-center gap-1" aria-hidden="true">
+                    <div className="w-3 h-3 rounded-full border-2 border-em bg-background" />
+                  </div>
+                  {/* Mobile vertical line connecting dots */}
+                  <div className="absolute left-[5px] top-9 bottom-0 w-px bg-border" aria-hidden="true" />
+                  <div className="mb-1">
+                    <span className="text-xs font-mono font-semibold text-em tracking-widest">
+                      {job.year}
+                    </span>
+                  </div>
+                  <JobCard job={job} index={i} />
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>

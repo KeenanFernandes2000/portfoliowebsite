@@ -7,14 +7,12 @@ import { cn } from "@/lib/utils";
 interface SkillGroup {
   category: string;
   skills: string[];
-  accent?: boolean;
 }
 
 const SKILL_GROUPS: SkillGroup[] = [
   {
     category: "Languages",
     skills: ["TypeScript", "JavaScript", "Python", "SQL", "PHP", "Java"],
-    accent: true,
   },
   {
     category: "Frontend",
@@ -36,7 +34,6 @@ const SKILL_GROUPS: SkillGroup[] = [
       "Voice Agents",
       "Agentic Workflows",
     ],
-    accent: true,
   },
   {
     category: "Cloud & DevOps",
@@ -44,7 +41,6 @@ const SKILL_GROUPS: SkillGroup[] = [
   },
 ];
 
-// Marquee ticker for all skills combined
 const ALL_SKILLS = SKILL_GROUPS.flatMap((g) => g.skills);
 
 function Marquee({ items }: { items: string[] }) {
@@ -74,9 +70,7 @@ function Marquee({ items }: { items: string[] }) {
     >
       <div
         className="flex gap-3 w-max"
-        style={{
-          animation: "marquee 40s linear infinite",
-        }}
+        style={{ animation: "marquee 40s linear infinite" }}
       >
         {doubled.map((s, i) => (
           <span
@@ -87,7 +81,6 @@ function Marquee({ items }: { items: string[] }) {
           </span>
         ))}
       </div>
-      {/* Fade edges */}
       <div className="absolute left-0 inset-y-0 w-16 bg-gradient-to-r from-background to-transparent pointer-events-none" />
       <div className="absolute right-0 inset-y-0 w-16 bg-gradient-to-l from-background to-transparent pointer-events-none" />
     </div>
@@ -125,6 +118,39 @@ function FadeInView({
   );
 }
 
+function SkillCard({ group, delay }: { group: SkillGroup; delay: number }) {
+  const [hovered, setHovered] = React.useState(false);
+
+  return (
+    <FadeInView delay={delay}>
+      <div
+        className={cn(
+          "p-5 rounded-2xl border bg-card h-full transition-all duration-200",
+          hovered
+            ? "border-em/50 shadow-[0_0_0_1px_var(--color-em)] bg-em-muted/30"
+            : "border-border"
+        )}
+      >
+        <h3 className="text-xs font-mono font-semibold tracking-widest uppercase mb-4 text-muted-foreground">
+          {group.category}
+        </h3>
+        <div className="flex flex-wrap gap-2">
+          {group.skills.map((skill) => (
+            <span
+              key={skill}
+              onMouseEnter={() => setHovered(true)}
+              onMouseLeave={() => setHovered(false)}
+              className="text-sm px-3 py-1 rounded-lg border border-border bg-muted/50 text-foreground hover:border-em hover:bg-em-muted transition-colors duration-200 cursor-default"
+            >
+              {skill}
+            </span>
+          ))}
+        </div>
+      </div>
+    </FadeInView>
+  );
+}
+
 export function Skills() {
   return (
     <section
@@ -151,48 +177,15 @@ export function Skills() {
         </h2>
       </FadeInView>
 
-      {/* Marquee ticker */}
       <FadeInView delay={0.1}>
         <div className="mb-12">
           <Marquee items={ALL_SKILLS} />
         </div>
       </FadeInView>
 
-      {/* Grouped cards */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
         {SKILL_GROUPS.map((group, i) => (
-          <FadeInView key={group.category} delay={0.1 + i * 0.07}>
-            <div
-              className={cn(
-                "p-5 rounded-2xl border bg-card h-full",
-                group.accent ? "border-em/30" : "border-border"
-              )}
-            >
-              <h3
-                className={cn(
-                  "text-xs font-mono font-semibold tracking-widest uppercase mb-4",
-                  group.accent ? "text-em" : "text-muted-foreground"
-                )}
-              >
-                {group.category}
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {group.skills.map((skill) => (
-                  <span
-                    key={skill}
-                    className={cn(
-                      "text-sm px-3 py-1 rounded-lg border transition-colors duration-200 cursor-default",
-                      group.accent
-                        ? "border-em/20 bg-em-muted text-foreground hover:border-em"
-                        : "border-border bg-muted/50 text-foreground hover:border-em hover:bg-em-muted"
-                    )}
-                  >
-                    {skill}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </FadeInView>
+          <SkillCard key={group.category} group={group} delay={0.1 + i * 0.07} />
         ))}
       </div>
     </section>
