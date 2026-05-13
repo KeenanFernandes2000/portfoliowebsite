@@ -1,9 +1,9 @@
 import {
   CopilotRuntime,
-  OpenAIAdapter,
   copilotRuntimeNextJSAppRouterEndpoint,
 } from "@copilotkit/runtime";
-import OpenAI from "openai";
+import { BuiltInAgent } from "@copilotkit/runtime/v2";
+import { createOpenAI } from "@ai-sdk/openai";
 import { NextRequest, NextResponse } from "next/server";
 
 // ── Rate limiting ─────────────────────────────────────────────────────────────
@@ -14,59 +14,51 @@ interface RateLimitEntry {
 
 const rateLimitMap = new Map<string, RateLimitEntry>();
 const RATE_LIMIT_MAX = 30;
-const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000; // 1 hour
+const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000;
 
 function checkRateLimit(ip: string): boolean {
   const now = Date.now();
   const entry = rateLimitMap.get(ip);
-
   if (!entry || now > entry.resetAt) {
     rateLimitMap.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
     return true;
   }
-
-  if (entry.count >= RATE_LIMIT_MAX) {
-    return false;
-  }
-
+  if (entry.count >= RATE_LIMIT_MAX) return false;
   entry.count++;
   return true;
 }
 
-// ── CopilotKit runtime setup ──────────────────────────────────────────────────
+// ── Build runtime once at module scope ────────────────────────────────────────
 function buildRuntime() {
   const apiKey = process.env.NVIDIA_API_KEY;
-  if (!apiKey) {
-    return null;
-  }
+  if (!apiKey) return null;
 
-  const openai = new OpenAI({
-    baseURL: "https://integrate.api.nvidia.com/v1",
+  const nvidia = createOpenAI({
     apiKey,
+    baseURL: "https://integrate.api.nvidia.com/v1",
   });
 
-  const serviceAdapter = new OpenAIAdapter({
-    openai,
-    model: "meta/llama-3.3-70b-instruct",
+  const agent = new BuiltInAgent({
+    model: nvidia("meta/llama-3.3-70b-instruct"),
   });
 
-  const runtime = new CopilotRuntime();
-
-  return { runtime, serviceAdapter };
+  return new CopilotRuntime({
+    agents: { default: agent },
+  });
 }
+
+const runtime = buildRuntime();
 
 // ── Route handler ─────────────────────────────────────────────────────────────
 export const POST = async (req: NextRequest): Promise<NextResponse> => {
-  // Guard missing API key
-  if (!process.env.NVIDIA_API_KEY) {
-    console.error("[copilotkit] NVIDIA_API_KEY is not set — cannot serve LLM requests.");
+  if (!runtime) {
+    console.error("[copilotkit] NVIDIA_API_KEY is not set.");
     return NextResponse.json(
       { error: "AI service is not configured." },
       { status: 500 }
     );
   }
 
-  // Rate limit
   const forwardedFor = req.headers.get("x-forwarded-for");
   const ip = forwardedFor ? forwardedFor.split(",")[0].trim() : "unknown";
 
@@ -77,17 +69,8 @@ export const POST = async (req: NextRequest): Promise<NextResponse> => {
     );
   }
 
-  const services = buildRuntime();
-  if (!services) {
-    return NextResponse.json(
-      { error: "AI service is not configured." },
-      { status: 500 }
-    );
-  }
-
   const { handleRequest } = copilotRuntimeNextJSAppRouterEndpoint({
-    runtime: services.runtime,
-    serviceAdapter: services.serviceAdapter,
+    runtime,
     endpoint: "/api/copilotkit",
   });
 
