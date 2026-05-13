@@ -123,12 +123,20 @@ function FadeInView({
   );
 }
 
-function JobCard({ job, index }: { job: Job; index: number }) {
+function JobCard({
+  job,
+  index,
+  align = "left",
+}: {
+  job: Job;
+  index: number;
+  align?: "left" | "right";
+}) {
   const [expanded, setExpanded] = React.useState(index === 0);
-  const isLeft = index % 2 === 0;
+  const isLeft = align === "left";
 
   return (
-    <FadeInView delay={index * 0.08} fromLeft={isLeft}>
+    <FadeInView delay={index * 0.08} fromLeft={!isLeft}>
       <article
         className={cn(
           "relative rounded-2xl border bg-card transition-all duration-300",
@@ -237,9 +245,14 @@ export function Experience() {
 
       {/* Alternating timeline */}
       <div className="relative">
-        {/* Center spine — desktop only */}
+        {/* Center spine — desktop */}
         <div
           className="absolute hidden md:block left-1/2 top-0 bottom-0 w-px bg-border -translate-x-1/2"
+          aria-hidden="true"
+        />
+        {/* Left spine — mobile */}
+        <div
+          className="absolute md:hidden left-6 top-0 bottom-0 w-px bg-border -translate-x-1/2"
           aria-hidden="true"
         />
 
@@ -247,39 +260,45 @@ export function Experience() {
           {JOBS.map((job, i) => {
             const isLeft = i % 2 === 0;
             return (
-              <div key={job.company + job.period} className="relative grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-x-8 items-start">
-                {/* Left column */}
-                <div className={cn("hidden md:block", !isLeft && "order-last")}>
-                  {isLeft && <JobCard job={job} index={i} />}
+              <div
+                key={job.company + job.period}
+                className="relative grid grid-cols-[3rem_1fr] md:grid-cols-[1fr_auto_1fr] gap-x-4 md:gap-x-8 items-start"
+              >
+                {/* Desktop: card column (1 or 3) */}
+                <div
+                  className={cn(
+                    "hidden md:block",
+                    isLeft ? "md:col-start-1 md:text-right" : "md:col-start-3"
+                  )}
+                >
+                  <JobCard job={job} index={i} align={isLeft ? "right" : "left"} />
                 </div>
 
-                {/* Center: year marker */}
-                <div className="hidden md:flex flex-col items-center gap-2 pt-6 relative z-10">
-                  <div className="w-3 h-3 rounded-full border-2 border-em bg-background" aria-hidden="true" />
+                {/* Desktop: center year marker */}
+                <div className="hidden md:flex md:col-start-2 md:row-start-1 flex-col items-center gap-2 pt-6 relative z-10">
+                  <div
+                    className="w-3 h-3 rounded-full border-2 border-em bg-background"
+                    aria-hidden="true"
+                  />
                   <span className="text-xs font-mono font-semibold text-em tracking-widest">
                     {job.year}
                   </span>
                 </div>
 
-                {/* Right column */}
-                <div className={cn("hidden md:block", isLeft && "order-last")}>
-                  {!isLeft && <JobCard job={job} index={i} />}
+                {/* Mobile: spine column */}
+                <div className="md:hidden flex flex-col items-center pt-6 relative">
+                  <div
+                    className="w-3 h-3 rounded-full border-2 border-em bg-background z-10"
+                    aria-hidden="true"
+                  />
+                  <span className="mt-1 text-[10px] font-mono font-semibold text-em tracking-widest">
+                    {job.year}
+                  </span>
                 </div>
 
-                {/* Mobile: single column (all cards stacked, left spine) */}
-                <div className="md:hidden relative pl-8">
-                  {/* Mobile spine dot + year */}
-                  <div className="absolute left-0 top-6 flex flex-col items-center gap-1" aria-hidden="true">
-                    <div className="w-3 h-3 rounded-full border-2 border-em bg-background" />
-                  </div>
-                  {/* Mobile vertical line connecting dots */}
-                  <div className="absolute left-[5px] top-9 bottom-0 w-px bg-border" aria-hidden="true" />
-                  <div className="mb-1">
-                    <span className="text-xs font-mono font-semibold text-em tracking-widest">
-                      {job.year}
-                    </span>
-                  </div>
-                  <JobCard job={job} index={i} />
+                {/* Mobile: card column */}
+                <div className="md:hidden">
+                  <JobCard job={job} index={i} align="left" />
                 </div>
               </div>
             );
