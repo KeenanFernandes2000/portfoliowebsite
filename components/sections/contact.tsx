@@ -202,6 +202,7 @@ export function Contact() {
                 onSubmit={handleSubmit}
                 className="rounded-2xl border border-border bg-card p-6 sm:p-8 space-y-5"
                 noValidate
+                suppressHydrationWarning
                 initial={{ opacity: 1 }}
                 exit={{ opacity: 0, y: shouldReduce ? 0 : -8 }}
                 transition={{ duration: shouldReduce ? 0.01 : 0.2 }}
@@ -216,6 +217,7 @@ export function Contact() {
                   autoComplete="off"
                   aria-hidden="true"
                   style={{ position: "absolute", left: "-9999px" }}
+                  suppressHydrationWarning
                 />
 
                 <div className="grid sm:grid-cols-2 gap-5">
@@ -235,6 +237,7 @@ export function Contact() {
                       disabled={isSubmitting}
                       className="w-full px-4 py-3 rounded-xl border border-border bg-background text-foreground placeholder:text-muted-foreground/60 focus:border-em focus:outline-none focus:ring-2 focus:ring-em/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       required
+                      suppressHydrationWarning
                     />
                   </div>
                   <div>
@@ -253,6 +256,7 @@ export function Contact() {
                       disabled={isSubmitting}
                       className="w-full px-4 py-3 rounded-xl border border-border bg-background text-foreground placeholder:text-muted-foreground/60 focus:border-em focus:outline-none focus:ring-2 focus:ring-em/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       required
+                      suppressHydrationWarning
                     />
                   </div>
                 </div>
@@ -273,6 +277,7 @@ export function Contact() {
                     disabled={isSubmitting}
                     className="w-full px-4 py-3 rounded-xl border border-border bg-background text-foreground placeholder:text-muted-foreground/60 focus:border-em focus:outline-none focus:ring-2 focus:ring-em/30 transition-colors resize-y min-h-[140px] disabled:opacity-50 disabled:cursor-not-allowed"
                     required
+                    suppressHydrationWarning
                   />
                 </div>
 
