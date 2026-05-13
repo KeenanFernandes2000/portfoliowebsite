@@ -1,36 +1,53 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Keenan Fernandes — Portfolio
 
-## Getting Started
+Personal portfolio for Keenan Domnick Fernandes, Full-Stack AI Engineer.
 
-First, run the development server:
+## Stack
+
+- **Next.js 16** (App Router) + TypeScript
+- **Tailwind CSS v4** with custom oklch design tokens
+- **shadcn/ui** for UI primitives
+- **Framer Motion** for scroll-driven and entrance animations
+- **next-themes** — dark mode default, light mode toggle
+- **lucide-react** icons
+
+## Run locally
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+bun install
+bun dev        # starts on http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Build
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+bun run build
+bun start
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Deploy (Vercel)
 
-## Learn More
+Push to GitHub, import the repo in Vercel — zero config needed. Next.js is auto-detected.
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+vercel --prod   # or use the Vercel dashboard
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Structure
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+app/
+  layout.tsx       # Root layout, metadata, ThemeProvider
+  page.tsx         # Single-page assembly
+components/
+  nav.tsx          # Sticky nav with mobile drawer + theme toggle
+  footer.tsx
+  sections/
+    hero.tsx       # Animated hero with rotating title + dot grid bg
+    about.tsx      # Bio paragraphs + highlight cards
+    experience.tsx # Expandable job timeline
+    skills.tsx     # Grouped skill chips + marquee ticker
+    projects.tsx   # Hardware & SaaS project grid
+    education.tsx  # Degree + certifications
+    contact.tsx    # Large CTA section
+```
