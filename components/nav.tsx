@@ -55,7 +55,7 @@ export function Nav() {
             <li key={link.href}>
               <button
                 onClick={() => handleNav(link.href)}
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200 focus-ring rounded font-mono"
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200 focus-ring rounded font-mono cursor-pointer"
               >
                 {link.label}
               </button>
@@ -68,7 +68,7 @@ export function Nav() {
           {mounted && (
             <button
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              className="w-9 h-9 flex items-center justify-center rounded-lg border border-border hover:border-em hover:text-em transition-colors duration-200 focus-ring"
+              className="w-9 h-9 flex items-center justify-center rounded-lg border border-border hover:border-em hover:text-em transition-colors duration-200 focus-ring cursor-pointer"
               aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
             >
               {theme === "dark" ? (
@@ -80,7 +80,7 @@ export function Nav() {
           )}
 
           <button
-            className="md:hidden w-9 h-9 flex items-center justify-center rounded-lg border border-border hover:border-em hover:text-em transition-colors duration-200 focus-ring"
+            className="md:hidden w-9 h-9 flex items-center justify-center rounded-lg border border-border hover:border-em hover:text-em transition-colors duration-200 focus-ring cursor-pointer"
             onClick={() => setOpen(!open)}
             aria-label={open ? "Close menu" : "Open menu"}
             aria-expanded={open}

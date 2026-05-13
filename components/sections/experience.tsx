@@ -170,7 +170,7 @@ function JobCard({
             <button
               onClick={() => setExpanded(!expanded)}
               className={cn(
-                "shrink-0 w-8 h-8 flex items-center justify-center rounded-lg border border-border hover:border-em hover:text-em transition-all duration-200 focus-ring",
+                "shrink-0 w-8 h-8 flex items-center justify-center rounded-lg border border-border hover:border-em hover:text-em transition-all duration-200 focus-ring cursor-pointer",
                 expanded && "border-em text-em"
               )}
               aria-expanded={expanded}
