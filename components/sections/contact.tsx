@@ -4,6 +4,7 @@ import * as React from "react";
 import { motion, useInView, useReducedMotion, AnimatePresence } from "framer-motion";
 import { Mail, Send, ExternalLink, Phone, CheckCircle2, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useContactFormStore } from "@/components/contact-form-store";
 
 function FadeInView({
   children,
@@ -39,9 +40,15 @@ function FadeInView({
 type FormStatus = "idle" | "submitting" | "success" | "error";
 
 export function Contact() {
-  const [name, setName] = React.useState("");
-  const [email, setEmail] = React.useState("");
-  const [message, setMessage] = React.useState("");
+  const {
+    name,
+    email,
+    message,
+    setName,
+    setEmail,
+    setMessage,
+    registerNameInputRef,
+  } = useContactFormStore();
   const [honeypot, setHoneypot] = React.useState("");
   const [status, setStatus] = React.useState<FormStatus>("idle");
   const [serverError, setServerError] = React.useState<string>("");
@@ -231,6 +238,7 @@ export function Contact() {
                     <input
                       id="name"
                       type="text"
+                      ref={registerNameInputRef}
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       placeholder="Jane Doe"

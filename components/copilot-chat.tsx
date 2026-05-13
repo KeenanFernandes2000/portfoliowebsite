@@ -1,17 +1,26 @@
 "use client";
 
-import { useCopilotReadable } from "@copilotkit/react-core";
+import { useCopilotAction, useCopilotReadable } from "@copilotkit/react-core";
 import { CopilotPopup } from "@copilotkit/react-ui";
 import "@copilotkit/react-ui/styles.css";
+import { useContactFormStore } from "@/components/contact-form-store";
 
 const SYSTEM_PROMPT = `You are Keenan Domnick Fernandes's friendly, professional portfolio assistant. Your job is to help visitors learn about Keenan's work, experience, projects, and skills.
 
 SCOPE: You only answer about Keenan, his experience, his projects, and adjacent technical topics in his domain (full-stack, AI/LLMs, agentic workflows, SaaS, cloud, government/enterprise tech). Politely deflect anything outside that scope with: "I'm here to chat about Keenan's work — I can't help with that one, but happy to talk about his AI/SaaS experience."
 
+CONTACT FORM FLOW:
+When a visitor wants to get in touch or reach out to Keenan:
+1. Ask for their name, email address, and a short description of what they'd like to discuss.
+2. Once you have all three, restate the details back to the visitor and ask them to confirm.
+3. ONLY after they confirm, call the fill_contact_form action with the collected values.
+4. After the action runs, tell the visitor the form has been pre-filled at the bottom of the page and they should review it and click "Send message" when ready.
+- NEVER call fill_contact_form on a greeting, casual message, or without all three confirmed values.
+- NEVER claim to send emails or messages yourself — you only pre-fill the form.
+- NEVER call fill_contact_form more than once per confirmed request.
+
 BEHAVIOR RULES:
 - Conversational and concise — no walls of text.
-- If a visitor wants to reach out to Keenan, point them to the contact form lower on the page, or give them his email (keenan030900@gmail.com) and LinkedIn (https://www.linkedin.com/in/keenan-fernandes-9906b4171/).
-- Do NOT attempt to send any message yourself — you have no tools for that.
 - Never invent facts about Keenan beyond what's in the CV content below.
 - Do not claim real-time information you don't have.
 
@@ -66,9 +75,47 @@ const CV_SUMMARY = {
 };
 
 export function CopilotChat() {
+  const store = useContactFormStore();
+
   useCopilotReadable({
     description: "Keenan Fernandes's full CV summary including role, achievements, tech stack, and contact info",
     value: CV_SUMMARY,
+  });
+
+  useCopilotAction({
+    name: "fill_contact_form",
+    description:
+      "Pre-fills the contact form on the page with the visitor's details. Call this only after the visitor has confirmed their name, email, and message.",
+    parameters: [
+      {
+        name: "name",
+        type: "string",
+        description: "The visitor's full name.",
+        required: true,
+      },
+      {
+        name: "email",
+        type: "string",
+        description: "The visitor's email address (must be a valid email).",
+        required: true,
+      },
+      {
+        name: "message",
+        type: "string",
+        description: "The message the visitor wants to send (5–2000 characters).",
+        required: true,
+      },
+    ],
+    handler: ({ name, email, message }) => {
+      store.fillAll({ name, email, message });
+      store.focusForm();
+      return "I've filled in the contact form for you at the bottom of the page — please review it and hit Send when you're ready.";
+    },
+    render: () => (
+      <div className="mt-2 rounded-xl border border-green-500/30 bg-green-500/10 px-4 py-3 text-sm text-green-400">
+        Form pre-filled — scroll to the bottom of the page to review and send.
+      </div>
+    ),
   });
 
   return (

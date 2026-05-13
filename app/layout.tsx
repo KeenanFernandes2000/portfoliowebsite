@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
+import { ContactFormProvider } from "@/components/contact-form-store";
 import { CopilotProvider } from "@/components/copilot-provider";
 import { AnimatedBackground } from "@/components/animated-bg";
 
@@ -71,10 +72,12 @@ export default function RootLayout({
       </head>
       <body className="min-h-screen bg-background text-foreground antialiased">
         <ThemeProvider>
-          <CopilotProvider>
-            <AnimatedBackground />
-            {children}
-          </CopilotProvider>
+          <ContactFormProvider>
+            <CopilotProvider>
+              <AnimatedBackground />
+              {children}
+            </CopilotProvider>
+          </ContactFormProvider>
         </ThemeProvider>
       </body>
     </html>
