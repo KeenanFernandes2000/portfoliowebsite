@@ -40,31 +40,6 @@ function RotatingTitle() {
   );
 }
 
-// Animated grid background
-function GridBackground() {
-  return (
-    <div
-      className="absolute inset-0 -z-10 overflow-hidden"
-      aria-hidden="true"
-    >
-      {/* Dot grid */}
-      <div
-        className="absolute inset-0 opacity-[0.15] dark:opacity-[0.07]"
-        style={{
-          backgroundImage:
-            "radial-gradient(circle, currentColor 1px, transparent 1px)",
-          backgroundSize: "32px 32px",
-        }}
-      />
-      {/* Gradient orbs */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-em-muted blur-3xl opacity-60" />
-      <div className="absolute bottom-1/3 right-1/4 w-80 h-80 rounded-full bg-[oklch(0.65_0.15_200_/_8%)] blur-3xl opacity-40" />
-      {/* Vignette */}
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background" />
-    </div>
-  );
-}
-
 export function Hero() {
   const shouldReduce = useReducedMotion();
 
@@ -99,8 +74,6 @@ export function Hero() {
       className="relative min-h-screen flex flex-col items-center justify-center text-center px-6 md:px-12 pt-16"
       aria-label="Hero section"
     >
-      <GridBackground />
-
       <motion.div
         variants={containerVariants}
         initial="hidden"
