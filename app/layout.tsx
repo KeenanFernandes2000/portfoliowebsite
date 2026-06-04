@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { cookies } from "next/headers";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ContactFormProvider } from "@/components/contact-form-store";
-import { CopilotProvider } from "@/components/copilot-provider";
 import { AnimatedBackground } from "@/components/animated-bg";
 
 const geistSans = Geist({
@@ -52,31 +52,25 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const theme =
+    (await cookies()).get("theme")?.value === "light" ? "light" : "dark";
+
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} dark`}
+      className={`${geistSans.variable} ${geistMono.variable} ${theme}`}
       suppressHydrationWarning
     >
-      <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem('theme');var d=document.documentElement;d.classList.remove('light','dark');d.classList.add(t==='light'?'light':'dark');}catch(e){}})();`,
-          }}
-        />
-      </head>
       <body className="min-h-screen bg-background text-foreground antialiased">
         <ThemeProvider>
           <ContactFormProvider>
-            <CopilotProvider>
-              <AnimatedBackground />
-              {children}
-            </CopilotProvider>
+            <AnimatedBackground />
+            {children}
           </ContactFormProvider>
         </ThemeProvider>
       </body>

@@ -6,7 +6,6 @@ import { Skills } from "@/components/sections/skills";
 import { Education } from "@/components/sections/education";
 import { Contact } from "@/components/sections/contact";
 import { Footer } from "@/components/footer";
-import { CopilotChatLazy } from "@/components/copilot-chat-lazy";
 
 export default function Home() {
   return (
@@ -21,7 +20,6 @@ export default function Home() {
         <Contact />
       </main>
       <Footer />
-      <CopilotChatLazy />
     </>
   );
 }

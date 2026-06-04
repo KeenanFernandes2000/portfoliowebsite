@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import { ArrowDown, Mail, ExternalLink, ChevronRight } from "lucide-react";
+import { ArrowDown, Mail, ChevronRight } from "lucide-react";
 
 const ROTATING_TITLES = [
   "Full-Stack AI Engineer",
@@ -120,25 +120,16 @@ export function Hero() {
           variants={itemVariants}
           className="flex flex-wrap items-center justify-center gap-4"
         >
-          <a
-            href="mailto:keenan030900@gmail.com"
-            className="inline-flex items-center gap-2 bg-em text-white font-medium text-sm px-6 py-3 rounded-xl hover:opacity-90 transition-opacity focus-ring shadow-lg shadow-em/20"
+          <button
+            onClick={() => handleScroll("#contact")}
+            className="inline-flex items-center gap-2 bg-em text-white font-medium text-sm px-6 py-3 rounded-xl hover:opacity-90 transition-opacity focus-ring shadow-lg shadow-em/20 cursor-pointer"
           >
             <Mail className="w-4 h-4" aria-hidden="true" />
             Get in touch
-          </a>
-          <a
-            href="https://www.linkedin.com/in/keenan-fernandes-9906b4171/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 border border-border hover:border-em hover:text-em text-muted-foreground font-medium text-sm px-6 py-3 rounded-xl transition-colors duration-200 focus-ring"
-          >
-            <ExternalLink className="w-4 h-4" aria-hidden="true" />
-            LinkedIn
-          </a>
+          </button>
           <button
             onClick={() => handleScroll("#experience")}
-            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-em transition-colors duration-200 focus-ring rounded-lg px-2 py-1"
+            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-em transition-colors duration-200 focus-ring rounded-lg px-2 py-1 cursor-pointer"
           >
             View work
             <ChevronRight className="w-4 h-4" aria-hidden="true" />

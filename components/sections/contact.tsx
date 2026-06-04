@@ -123,23 +123,6 @@ export function Contact() {
         <FadeInView delay={0.05}>
           <div className="space-y-3">
             <a
-              href="mailto:keenan030900@gmail.com"
-              className="group flex items-center gap-4 p-5 rounded-2xl border border-border bg-card hover:border-em/50 hover:bg-em-muted/30 transition-all duration-200 focus-ring"
-            >
-              <span className="w-10 h-10 rounded-xl bg-em-muted flex items-center justify-center text-em shrink-0">
-                <Mail className="w-5 h-5" aria-hidden="true" />
-              </span>
-              <span className="min-w-0">
-                <span className="block text-xs font-mono uppercase tracking-widest text-muted-foreground">
-                  Email
-                </span>
-                <span className="block text-sm font-medium text-foreground truncate group-hover:text-em transition-colors">
-                  keenan030900@gmail.com
-                </span>
-              </span>
-            </a>
-
-            <a
               href="https://www.linkedin.com/in/keenan-fernandes-9906b4171/"
               target="_blank"
               rel="noopener noreferrer"
@@ -159,9 +142,46 @@ export function Contact() {
             </a>
 
             <a
-              href="tel:+971501133872"
+              href="https://github.com/KeenanFernandes2000"
+              target="_blank"
+              rel="noopener noreferrer"
               className="group flex items-center gap-4 p-5 rounded-2xl border border-border bg-card hover:border-em/50 hover:bg-em-muted/30 transition-all duration-200 focus-ring"
             >
+              <span className="w-10 h-10 rounded-xl bg-em-muted flex items-center justify-center text-em shrink-0">
+                <svg
+                  className="w-5 h-5"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path d="M12 .5a12 12 0 0 0-3.79 23.4c.6.11.82-.26.82-.58v-2.03c-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.5.99.11-.78.42-1.3.76-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.11-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.29-1.55 3.3-1.23 3.3-1.23.65 1.66.24 2.88.12 3.18.77.84 1.23 1.91 1.23 3.22 0 4.61-2.8 5.63-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.21.7.82.58A12 12 0 0 0 12 .5Z" />
+                </svg>
+              </span>
+              <span className="min-w-0">
+                <span className="block text-xs font-mono uppercase tracking-widest text-muted-foreground">
+                  GitHub
+                </span>
+                <span className="block text-sm font-medium text-foreground group-hover:text-em transition-colors">
+                  @KeenanFernandes2000
+                </span>
+              </span>
+            </a>
+
+            <div className="flex items-center gap-4 p-5 rounded-2xl border border-border bg-card">
+              <span className="w-10 h-10 rounded-xl bg-em-muted flex items-center justify-center text-em shrink-0">
+                <Mail className="w-5 h-5" aria-hidden="true" />
+              </span>
+              <span className="min-w-0">
+                <span className="block text-xs font-mono uppercase tracking-widest text-muted-foreground">
+                  Email
+                </span>
+                <span className="block text-sm font-medium text-foreground truncate">
+                  keenan030900@gmail.com
+                </span>
+              </span>
+            </div>
+
+            <div className="flex items-center gap-4 p-5 rounded-2xl border border-border bg-card">
               <span className="w-10 h-10 rounded-xl bg-em-muted flex items-center justify-center text-em shrink-0">
                 <Phone className="w-5 h-5" aria-hidden="true" />
               </span>
@@ -169,11 +189,11 @@ export function Contact() {
                 <span className="block text-xs font-mono uppercase tracking-widest text-muted-foreground">
                   Phone
                 </span>
-                <span className="block text-sm font-medium text-foreground group-hover:text-em transition-colors">
+                <span className="block text-sm font-medium text-foreground">
                   +971 50-113-3872
                 </span>
               </span>
-            </a>
+            </div>
           </div>
         </FadeInView>
 

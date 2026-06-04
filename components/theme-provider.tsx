@@ -11,16 +11,15 @@ interface ThemeContextValue {
 
 const ThemeContext = React.createContext<ThemeContextValue | null>(null);
 
-const STORAGE_KEY = "theme";
-
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
+  // Initialise from the class the server set on <html> (read from the cookie),
+  // so client state matches SSR with no flash.
   const [theme, setThemeState] = React.useState<Theme>("dark");
 
   React.useEffect(() => {
-    const stored = (typeof window !== "undefined" &&
-      (localStorage.getItem(STORAGE_KEY) as Theme | null)) ||
-      (document.documentElement.classList.contains("light") ? "light" : "dark");
-    setThemeState(stored);
+    setThemeState(
+      document.documentElement.classList.contains("light") ? "light" : "dark"
+    );
   }, []);
 
   const setTheme = React.useCallback((t: Theme) => {
@@ -28,9 +27,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     const root = document.documentElement;
     root.classList.remove("light", "dark");
     root.classList.add(t);
-    try {
-      localStorage.setItem(STORAGE_KEY, t);
-    } catch {}
+    // Persist in a cookie so the server can render the correct theme on next load.
+    document.cookie = `theme=${t}; path=/; max-age=31536000; samesite=lax`;
   }, []);
 
   return (

@@ -1,7 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
-@import "@copilotkit/react-ui/styles.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -171,82 +170,4 @@
   .focus-ring {
     @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-em focus-visible:ring-offset-2 focus-visible:ring-offset-background;
   }
-}
-
-/* ── CopilotKit theming ────────────────────────────────────────────────────── */
-:root,
-.copilotKitPopup,
-.copilotKitButton,
-[class*="copilotKit"] {
-  --copilot-kit-primary-color: var(--em);
-  --copilot-kit-contrast-color: #ffffff;
-  --copilot-kit-background-color: var(--card);
-  --copilot-kit-secondary-color: var(--muted);
-  --copilot-kit-separator-color: var(--border);
-  --copilot-kit-muted-color: var(--muted-foreground);
-}
-
-/* Force theme-aware background on the chat window + message list */
-[class*="copilotKitWindow"],
-[class*="copilotKitMessages"],
-[class*="copilotKitInput"],
-.copilotKitWindow,
-.copilotKitMessages,
-.copilotKitInput {
-  background-color: var(--card) !important;
-  color: var(--foreground) !important;
-}
-
-/* Assistant message bubbles */
-[class*="copilotKitMessage"][class*="assistant" i],
-[class*="copilotKitMessage"]:not([class*="user" i]) {
-  background-color: var(--muted) !important;
-  color: var(--foreground) !important;
-}
-
-/* User message bubbles use the emerald accent */
-[class*="copilotKitMessage"][class*="user" i] {
-  background-color: var(--em) !important;
-  color: #fff !important;
-}
-
-/* Input text + placeholder */
-[class*="copilotKitInput"] textarea,
-[class*="copilotKitInput"] input {
-  background-color: var(--background) !important;
-  color: var(--foreground) !important;
-  border-color: var(--border) !important;
-}
-[class*="copilotKitInput"] textarea::placeholder,
-[class*="copilotKitInput"] input::placeholder {
-  color: var(--muted-foreground) !important;
-}
-
-/* Header title color follows theme — covers v1 + v2 class names */
-.copilotKitHeader,
-.copilotKitHeader *,
-.copilotKitWindowHeader,
-.copilotKitWindowHeader *,
-[class*="copilotKitHeader"],
-[class*="copilotKitHeader"] * {
-  color: var(--foreground) !important;
-}
-
-/* All buttons inside the popup get a pointer cursor */
-.copilotKitPopup button,
-.copilotKitWindow button,
-[class*="copilotKit"] button {
-  cursor: pointer;
-}
-
-/* Hide help + debug buttons regardless of class names */
-[class*="copilotKit"] [aria-label*="Help" i],
-[class*="copilotKit"] [aria-label*="Debug" i],
-[class*="copilotKit"] [title*="Help" i],
-[class*="copilotKit"] [title*="Debug" i],
-[class*="copilotKitDebug"],
-[class*="copilotKitHelp"],
-[class*="DebugButton"],
-[class*="HelpButton"] {
-  display: none !important;
 }

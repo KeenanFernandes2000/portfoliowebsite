@@ -158,7 +158,7 @@ function JobCard({
         <div className="p-6">
           {/* Header */}
           <div className="flex items-start justify-between gap-4 mb-4">
-            <div>
+            <div className="text-left">
               <p className="text-xs font-mono text-muted-foreground mb-1">
                 {job.period} · {job.location}
               </p>
@@ -214,7 +214,7 @@ function JobCard({
                 }}
                 className="overflow-hidden"
               >
-                <div className="mt-5 space-y-2.5">
+                <div className="mt-5 space-y-2.5 text-left">
                   {job.bullets.map((bullet, i) => (
                     <li
                       key={i}

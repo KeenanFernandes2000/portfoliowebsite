@@ -11,7 +11,7 @@ interface SkillGroup {
 
 const SKILL_GROUPS: SkillGroup[] = [
   {
-    category: "Languages",
+    category: "Programming Languages",
     skills: ["TypeScript", "JavaScript", "Python", "SQL", "PHP", "Java"],
   },
   {
