@@ -1,0 +1,25 @@
+# deps & build artifacts (rebuilt inside the image)
+node_modules
+.next
+out
+
+# secrets — provided at runtime via compose env_file, never baked into the image
+.env*
+!.env.local.example
+
+# vcs & tooling
+.git
+.gitignore
+.claude
+.vercel
+
+# docs & local-only
+README.md
+reference
+*.tsbuildinfo
+
+# docker
+Dockerfile
+.dockerignore
+docker-compose.yml
+docker-compose.yaml

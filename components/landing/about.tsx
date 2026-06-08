@@ -4,10 +4,10 @@ import React from 'react';
 import { Reveal, useInView, MaybeTilt } from './effects';
 
 const ABOUT_INGREDIENTS = [
-  { pct: '40%', label: 'Full-Stack', desc: 'End-to-end ownership — DB schema to pixel-perfect UI.', icon: 'code' },
-  { pct: '30%', label: 'AI / LLM', desc: 'LangChain, LangGraph, voice agents, agentic workflows.', icon: 'brain' },
-  { pct: '20%', label: 'Cloud & Infra', desc: 'AWS, Azure, Docker, Dokploy — production-grade deploys.', icon: 'server' },
-  { pct: '10%', label: 'Technical Lead', desc: 'Client-facing delivery, junior mentor, cross-team glue.', icon: 'users' },
+  { pct: '80%', label: 'Full-Stack', desc: 'End-to-end ownership — DB schema to pixel-perfect UI.', icon: 'code' },
+  { pct: '60%', label: 'AI / LLM', desc: 'LangChain, LangGraph, voice agents, agentic workflows.', icon: 'brain' },
+  { pct: '50%', label: 'Cloud & Infra', desc: 'AWS, Azure, Docker, Dokploy — production-grade deploys.', icon: 'server' },
+  { pct: '40%', label: 'Technical Lead', desc: 'Client-facing delivery, junior mentor, cross-team glue.', icon: 'users' },
 ];
 
 function IngIcon({ name }: { name: string }) {

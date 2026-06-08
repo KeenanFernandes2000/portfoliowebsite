@@ -1,0 +1,23 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: codingbarista:latest
+    container_name: codingbarista
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    # Resend / email env. Create .env.local on the host (see .env.local.example).
+    # required:false so the stack still starts before the file exists.
+    env_file:
+      - path: .env.local
+        required: false
+    environment:
+      - NODE_ENV=production
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
