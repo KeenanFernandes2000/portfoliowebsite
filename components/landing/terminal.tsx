@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 
 const TERM_BANNER = [
-  '  ☕  codingbarista.dev — interactive shell  v1.0',
+  '  ☕  codingbarista — interactive shell  v1.0',
   '  type `help` for the menu · `exit` or ~ to close',
 ];
 
