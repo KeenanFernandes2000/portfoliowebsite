@@ -58,7 +58,7 @@ export function About({ tilt = true }: { tilt?: boolean }) {
               </Reveal>
               <Reveal delay={180}>
                 <p className="lead">
-                  At <span style={{ color: 'var(--text)', fontWeight: 600 }}>Potential FZ LLC</span> I lead technical delivery on
+                  At <span style={{ color: 'var(--text)', fontWeight: 600 }}>Potential FZ LLC </span>I lead technical delivery on
                   government &amp; enterprise projects. Most notably I built and scaled{' '}
                   <span className="text-em" style={{ fontWeight: 600 }}>VX-Academy</span> for the Department of Culture &amp;
                   Tourism – Abu Dhabi to <span style={{ color: 'var(--text)' }}>20,000+ users</span>, cutting peak-load DB

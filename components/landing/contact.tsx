@@ -28,22 +28,41 @@ function Field({ label, id, children }: { label: string; id: string; children: R
 }
 
 export function Contact() {
-  const [form, setForm] = useState({ name: '', email: '', message: '' });
-  const [status, setStatus] = useState<'idle' | 'submitting' | 'success'>('idle');
+  // `website` is a honeypot — real users never fill it; bots that do are silently dropped server-side.
+  const [form, setForm] = useState({ name: '', email: '', message: '', website: '' });
+  const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
+  const [error, setError] = useState('');
   const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
     setForm(f => ({ ...f, [k]: e.target.value }));
   const valid = form.name.trim().length > 1 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email) && form.message.trim().length > 3;
 
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!valid || status === 'submitting') return;
     setStatus('submitting');
-    setTimeout(() => {
-      const subject = encodeURIComponent(`New order from ${form.name}`);
-      const body = encodeURIComponent(`${form.message}\n\n— ${form.name}\n${form.email}`);
-      window.location.href = `mailto:keenan030900@gmail.com?subject=${subject}&body=${body}`;
+    setError('');
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: form.name.trim(),
+          email: form.email.trim(),
+          message: form.message.trim(),
+          website: form.website,
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setError(data.error || 'Something went wrong — please try again.');
+        setStatus('error');
+        return;
+      }
       setStatus('success');
-    }, 900);
+    } catch {
+      setError('Network error — please try again in a moment.');
+      setStatus('error');
+    }
   };
 
   return (
@@ -96,10 +115,10 @@ export function Contact() {
                   </span>
                   <div>
                     <p style={{ fontSize: 18, fontWeight: 600, color: 'var(--text)', marginBottom: 6, fontFamily: 'var(--display)' }}>Order received! ☕</p>
-                    <p className="lead" style={{ fontSize: 14 }}>Your mail draft is ready — hit send and I&apos;ll get back to you within a few days.</p>
+                    <p className="lead" style={{ fontSize: 14 }}>Thanks — your message landed in my inbox. I&apos;ll be in touch within a few hours.</p>
                   </div>
                   <button className="btn btn-ghost" style={{ marginTop: 6 }}
-                    onClick={() => { setForm({ name: '', email: '', message: '' }); setStatus('idle'); }}>place another</button>
+                    onClick={() => { setForm({ name: '', email: '', message: '', website: '' }); setStatus('idle'); }}>place another</button>
                 </div>
               ) : (
                 <form onSubmit={submit} style={{ padding: 24, display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -110,13 +129,20 @@ export function Contact() {
                   <Field label="the brief" id="c-msg">
                     <textarea id="c-msg" className="inp" rows={5} value={form.message} onChange={set('message')} placeholder="Tell me about the role, project, or idea…" style={{ resize: 'vertical', minHeight: 120 }} />
                   </Field>
+                  {/* honeypot — hidden from humans, catches bots */}
+                  <input type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden="true"
+                    value={form.website} onChange={set('website')}
+                    style={{ position: 'absolute', left: '-9999px', width: 1, height: 1, opacity: 0 }} />
+                  {status === 'error' && (
+                    <p role="alert" className="mono-label" style={{ textTransform: 'none', letterSpacing: '0.02em', fontSize: 12, color: '#ff5f57' }}>{error}</p>
+                  )}
                   <button type="submit" disabled={!valid || status === 'submitting'} className="btn btn-primary"
                     style={{ alignSelf: 'flex-start', opacity: valid && status !== 'submitting' ? 1 : 0.5, cursor: valid && status !== 'submitting' ? 'pointer' : 'not-allowed' }}>
                     {status === 'submitting'
                       ? <><span style={{ display: 'inline-block', width: 15, height: 15, border: '2px solid currentColor', borderTopColor: 'transparent', borderRadius: 99, animation: 'spin 0.7s linear infinite' }} /> brewing…</>
                       : <><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m22 2-7 20-4-9-9-4Z" /><path d="M22 2 11 13" /></svg> send order</>}
                   </button>
-                  <p className="mono-label" style={{ textTransform: 'none', letterSpacing: '0.03em', fontSize: 11, color: 'var(--faint)' }}>// opens a pre-filled draft in your mail client</p>
+                  <p className="mono-label" style={{ textTransform: 'none', letterSpacing: '0.03em', fontSize: 11, color: 'var(--faint)' }}>// sends straight to my inbox — I reply within a few hours</p>
                 </form>
               )}
             </div>
