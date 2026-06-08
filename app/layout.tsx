@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -14,16 +15,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" data-theme="dark" data-accent="coral" suppressHydrationWarning>
-      <head>
-        {/* set theme/accent before first paint to avoid flash for returning users */}
-        <script
-          id="cb-theme-init"
-          dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem('cb-theme');if(t)document.documentElement.setAttribute('data-theme',t);var a=localStorage.getItem('cb-accent');if(a)document.documentElement.setAttribute('data-accent',a);}catch(e){}})();`,
-          }}
-        />
-      </head>
       <body className="noise">
+        {/* set theme/accent before first paint to avoid flash for returning users */}
+        <Script id="cb-theme-init" strategy="beforeInteractive">
+          {`(function(){try{var t=localStorage.getItem('cb-theme');if(t)document.documentElement.setAttribute('data-theme',t);var a=localStorage.getItem('cb-accent');if(a)document.documentElement.setAttribute('data-accent',a);}catch(e){}})();`}
+        </Script>
         <div id="boot">
           brewing<span className="blink">_</span>
         </div>

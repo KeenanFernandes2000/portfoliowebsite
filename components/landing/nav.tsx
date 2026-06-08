@@ -67,7 +67,6 @@ export function Nav({ theme, toggleTheme, onOpenTerminal }: {
           <CoffeeMark />
           <span style={{ fontFamily: 'var(--mono)', fontWeight: 700, fontSize: 14, letterSpacing: '-0.01em' }}>
             coding<span className="text-crema">barista</span>
-            <span className="text-em">.dev</span>
           </span>
         </button>
 

@@ -17,14 +17,22 @@ export const REDUCE =
 
 /* ---------------- theme ---------------- */
 export function useTheme(): [string, () => void] {
-  const [theme, setTheme] = useState(() => {
-    try {
-      return (typeof window !== 'undefined' && localStorage.getItem('cb-theme')) || 'dark';
-    } catch {
-      return 'dark';
-    }
-  });
+  // Default to 'dark' so SSR and the first client render agree (the pre-paint
+  // script in layout already applied the stored theme to <html>). Reading
+  // localStorage in the initializer would desync server/client → hydration error.
+  const [theme, setTheme] = useState('dark');
+  const firstPersist = useRef(true);
+  // hydrate React state from storage after mount
   useEffect(() => {
+    try {
+      const t = localStorage.getItem('cb-theme');
+      if (t) setTheme(t);
+    } catch {}
+  }, []);
+  // persist + apply on change — but skip the initial commit so we don't clobber
+  // the pre-paint attribute (would flash dark→stored on reload)
+  useEffect(() => {
+    if (firstPersist.current) { firstPersist.current = false; return; }
     document.documentElement.setAttribute('data-theme', theme);
     try { localStorage.setItem('cb-theme', theme); } catch {}
   }, [theme]);
